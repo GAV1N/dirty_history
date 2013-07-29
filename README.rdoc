@@ -70,7 +70,7 @@ You can optionally track the creator of dirty history records by passing a creat
 Now, suppose you want to access all of a user's changes to objects of type Foo:
 
   user = User.find(123)
-  user.dirty_history_records.for_object_type("Foo")
+  user.dirty_history_records.for_asset_type("Foo")
     # => returns the user's changes made only objects of type Foo
 
 # TODO: add more documentation

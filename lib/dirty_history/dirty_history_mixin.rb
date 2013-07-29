@@ -27,9 +27,9 @@ module DirtyHistory
       def has_dirty_history *args
         # Mix in the module, but ensure to do so just once.
         metaclass = (class << self; self; end)
-        return if metaclass.included_modules.include?(DirtyHistory::Mixin::ObjectInstanceMethods)
+        return if metaclass.included_modules.include?(DirtyHistory::Mixin::AssetInstanceMethods)
 
-        has_many        :dirty_history_records, :as => :object, :dependent => :destroy
+        has_many        :dirty_history_records, :as => :asset, :dependent => :destroy
         attr_accessor   :dirty_history_changes, :initialize_dirty_history
         cattr_accessor  :dirty_history_columns
 
@@ -56,7 +56,7 @@ module DirtyHistory
               end
             end
           end
-          include DirtyHistory::Mixin::ObjectInstanceMethods
+          include DirtyHistory::Mixin::AssetInstanceMethods
         end
       end # has_dirty_history
 
@@ -71,7 +71,7 @@ module DirtyHistory
       end # creates_dirty_history
     end # ClassMethods
 
-    module ObjectInstanceMethods
+    module AssetInstanceMethods
 
       def set_dirty_history_changes
         return true unless self.new_record? || self.changed?
@@ -102,7 +102,7 @@ module DirtyHistory
         creator = options[:creator] || self.creator_for_dirty_history
 
         dhr_attributes = {
-          :object       => self,
+          :asset        => self,
           :column_name  => column_name,
           :column_type  => self.class.columns_hash[column_name.to_s].type,
           :old_value    => old_value,
@@ -130,7 +130,7 @@ module DirtyHistory
         options[:return_objects] ? records : records.map { |s| s.new_value }
       end
 
-    end # ObjectInstanceMethods
+    end # AssetInstanceMethods
 
     module CreatorInstanceMethods
 
