@@ -2,8 +2,6 @@ class DirtyHistoryRecord < ActiveRecord::Base
   belongs_to :creator,  :polymorphic => true
   belongs_to :asset,    :polymorphic => true
 
-  validates_presence_of :asset_type, :asset_id, :column_name, :column_type, :new_value
-
   scope :created_by,            lambda { |creator| where(["#{table_name}.creator_id = ? AND #{table_name}.creator_type = ?", creator.id, creator.class.name]) }
   scope :not_created_by,        lambda { |non_creator| where(["#{table_name}.creator_id <> ? OR #{table_name}.creator_type <> ?", non_creator.id, non_creator.class.name]) }
   scope :for_asset_type,        lambda { |asset_type| where(:asset_type => asset_type.to_s.classify) }
@@ -22,7 +20,8 @@ class DirtyHistoryRecord < ActiveRecord::Base
 
   attr_accessor   :performing_manual_update
 
-  before_save :set_value_changed_at
+  before_validation :set_value_changed_at
+  validates_presence_of :asset_type, :asset_id, :column_name, :column_type, :new_value
 
   [:new_value, :old_value].each do |attribute|
     define_method "#{attribute}" do
