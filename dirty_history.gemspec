@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "dirty_history"
-  s.version = "0.7.0"
+  s.version = "0.7.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Gavin Todes"]
-  s.date = "2012-11-12"
+  s.date = "2012-11-30"
   s.description = "Dirty History is a simple gem that allows you to keep track of changes to specific fields in your Rails models using the ActiveRecord::Dirty module."
   s.email = "gavin.todes@gmail.com"
   s.extra_rdoc_files = [

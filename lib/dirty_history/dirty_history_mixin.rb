@@ -92,6 +92,10 @@ module DirtyHistory
         self.dirty_history_changes.each do |column_name,vals|
           add_dirty_history_record column_name, vals[0], vals[1], :creator => self.creator_for_dirty_history
         end
+
+        self.dirty_history_changes = nil
+
+        return true
       end
 
       def add_dirty_history_record column_name, old_value, new_value, options={}

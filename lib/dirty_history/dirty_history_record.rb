@@ -4,18 +4,17 @@ class DirtyHistoryRecord < ActiveRecord::Base
 
   validates_presence_of :object_type, :object_id, :column_name, :column_type, :new_value
 
-  scope :created_by,            lambda { |creator| where(["dirty_history_records.creator_id = ? AND dirty_history_records.creator_type = ?", creator.id, creator.class.name]) }
-  scope :not_created_by,        lambda { |non_creator| where(["dirty_history_records.creator_id <> ? OR dirty_history_records.creator_type <> ?", non_creator.id, non_creator.class.name]) }
+  scope :created_by,            lambda { |creator| where(["#{table_name}.creator_id = ? AND #{table_name}.creator_type = ?", creator.id, creator.class.name]) }
+  scope :not_created_by,        lambda { |non_creator| where(["#{table_name}.creator_id <> ? OR #{table_name}.creator_type <> ?", non_creator.id, non_creator.class.name]) }
   scope :for_object_type,       lambda { |object_type| where(:object_type => object_type.to_s.classify) }
   scope :for_column,            lambda { |column| where(:column_name => column.to_s) }
 
-  scope :changed_in_range,      lambda { |range| where("value_changed_at >=? AND value_changed_at <= ?", range.first, range.last) }
-  scope :changed_at_gte,        lambda { |date|  where("value_changed_at >=?", date) }
-  scope :changed_at_lte,        lambda { |date|  where("value_changed_at <=?", date) }
+  scope :changed_in_range,      lambda { |range| where("#{table_name}.value_changed_at >=? AND #{table_name}.value_changed_at <= ?", range.first, range.last) }
+  scope :changed_at_gte,        lambda { |date|  where("#{table_name}.value_changed_at >=?", date) }
+  scope :changed_at_lte,        lambda { |date|  where("#{table_name}.value_changed_at <=?", date) }
 
-  scope :order_asc,  order("value_changed_at ASC")
-  scope :order_desc, order("value_changed_at DESC")
-
+  scope :order_asc,  order("#{table_name}.value_changed_at ASC")
+  scope :order_desc, order("#{table_name}.value_changed_at DESC")
 
   attr_accessible :object, :object_id, :object_type,
                   :column_name, :column_type, :old_value, :new_value,
