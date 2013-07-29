@@ -1,22 +1,24 @@
 = Dirty History
 
+WARNING: Dirty History is not intended for public consumption. Use at your own risk.
+
 Dirty History is a simple gem that allows you to keep track of changes to specific fields in your Rails models using the ActiveRecord::Dirty module.
-                                                                                                                               
+
 == Installation
 
 Add dirty_history to your Gemfile:
-  
+
   gem "dirty_history"
-  
+
 Install it using Bundler
-  
+
   bundle install
 
 Generate the Dirty History migration and migrate your database
-  
+
   rails generate dirty_history:migration
   rake db:migrate
-  
+
 == Usage
 
 Dirty History must be set up within the ActiveRecord model (or models) you want to use. Simply include the dirty_history mixing and call the has_dirty_history class method on your model(s), passing the attributes that you would like to track changes to.
@@ -25,25 +27,25 @@ For example, assume you want to use Dirty History in your Widget model to keep t
 
   class Widget < ActiveRecord::Base
 
-    include DirtyHistory::Mixin     
+    include DirtyHistory::Mixin
     has_dirty_history :name, :price
 
-   end        
-  
+   end
+
 You can optionally track the creator of dirty history records by passing a creator proc that will be called when a DirtyHistoryRecord is being saved for your object.
 
-  class Widget < ActiveRecord::Base    
-  
-    include DirtyHistory::Mixin     
+  class Widget < ActiveRecord::Base
+
+    include DirtyHistory::Mixin
     has_dirty_history :name, :price, :creator => proc { User.current_user }
 
-  end      
-  
-  widget = Widget.last 
+  end
+
+  widget = Widget.last
   widget.name
     # => "Box"
   widget.name = "Heart Shaped Box"
-  widget.save 
+  widget.save
   widget.dirty_history_records
     # => returns all changes to the widget
 
@@ -52,29 +54,29 @@ You can optionally track the creator of dirty history records by passing a creat
     # => "Thing"
   dirty_history.new_value
     # => "Heart Shaped Box"
-             
+
   user   = User.find(123)
-  widget.dirty_history_records.created_by(user) 
+  widget.dirty_history_records.created_by(user)
     # => returns all changes to the widget performed by the specified user
-  
+
   class User < ActiveRecord::Base
     creates_dirty_history
-  end    
-  
+  end
+
   user = User.find(123)
-  user.dirty_history_records 
+  user.dirty_history_records
     # => returns changes made by the specified user
-  
+
 Now, suppose you want to access all of a user's changes to objects of type Foo:
 
   user = User.find(123)
-  user.dirty_history_records.for_object_type("Foo") 
+  user.dirty_history_records.for_object_type("Foo")
     # => returns the user's changes made only objects of type Foo
 
 # TODO: add more documentation
 
 == Contributing to Dirty History
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
 * Fork the project

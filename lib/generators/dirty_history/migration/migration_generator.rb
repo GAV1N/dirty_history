@@ -17,7 +17,7 @@ module DirtyHistory
     def self.orm_has_migration?
       [:active_record].include? orm
     end
-    
+
     def self.next_migration_number(path)
       Time.now.utc.strftime("%Y%m%d%H%M%S")
     end
