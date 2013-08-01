@@ -53,7 +53,7 @@ class DirtyHistoryRecord < ActiveRecord::Base
   end
 
   def set_value_changed_at
-    self[:value_changed_at] ||= self.created_at
+    self[:value_changed_at] ||= Time.zone.now
   end
 
 end
