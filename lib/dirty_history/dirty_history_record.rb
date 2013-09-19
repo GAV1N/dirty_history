@@ -21,7 +21,7 @@ class DirtyHistoryRecord < ActiveRecord::Base
   attr_accessor   :performing_manual_update
 
   before_validation :set_value_changed_at
-  validates_presence_of :asset_type, :asset_id, :column_name, :column_type, :new_value
+  validates_presence_of :asset_type, :asset_id, :column_name, :column_type
 
   [:new_value, :old_value].each do |attribute|
     define_method "#{attribute}" do
