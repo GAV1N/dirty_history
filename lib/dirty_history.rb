@@ -1,3 +1,4 @@
+require "dirty_history/version"
 require "active_record"
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
