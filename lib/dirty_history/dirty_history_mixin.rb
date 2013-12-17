@@ -76,9 +76,13 @@ module DirtyHistory
       def set_dirty_history_changes
         return true unless self.new_record? || self.changed?
 
-        self.dirty_history_changes    = self.class.dirty_history_columns.inject({}) do |changes_hash, column_name|
-          changes_hash[column_name]   = self.send("#{column_name}_change") if self.send("#{column_name}_changed?")
-          changes_hash[column_name] ||= [nil, self.send(column_name)] if self.new_record? && self.send(column_name).present?
+        self.dirty_history_changes = self.class.dirty_history_columns.inject({}) do |changes_hash, column_name|
+          change = self.changes[column_name.to_s]
+
+          if change && (change[0].present? || change[1].present?)
+            changes_hash[column_name] = change
+          end
+
           changes_hash
         end
 
@@ -139,6 +143,3 @@ module DirtyHistory
   end # Mixin
 
 end # DirtyHistory
-
-
-ActiveRecord::Base.send :include, DirtyHistory::Mixin
