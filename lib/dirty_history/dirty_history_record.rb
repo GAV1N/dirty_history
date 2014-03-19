@@ -33,6 +33,16 @@ class DirtyHistoryRecord < ActiveRecord::Base
     end
   end
 
+  def oldest_for_column?
+    column_history = self.class.where(column_name: column_name, column_type: column_type, asset_id: asset_id, asset_type: asset_type)
+    self == column_history.order_asc.first
+  end
+
+  def newest_for_column?
+    column_history = self.class.where(column_name: column_name, column_type: column_type, asset_id: asset_id, asset_type: asset_type)
+    self == column_history.order_desc.first
+  end
+
   private
 
   def val_to_col_type attribute
