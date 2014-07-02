@@ -21,6 +21,8 @@ class DirtyHistoryRecord < ActiveRecord::Base
   attr_accessor   :performing_manual_update
 
   before_validation :set_value_changed_at
+  after_save :run_value_changed_callback, if: :value_changed_at_changed?
+
   validates_presence_of :asset_type, :asset_id, :column_name, :column_type
 
   [:new_value, :old_value].each do |attribute|
@@ -64,6 +66,12 @@ class DirtyHistoryRecord < ActiveRecord::Base
 
   def set_value_changed_at
     self[:value_changed_at] ||= Time.zone.now
+  end
+
+  def run_value_changed_callback
+    if self.asset.respond_to? :dirty_history_record_value_changed_callback
+      self.asset.dirty_history_record_value_changed_callback(self)
+    end
   end
 
 end

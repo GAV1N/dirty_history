@@ -2,7 +2,8 @@ module DirtyHistory
 
   module Mixin
 
-    class CreatorProcError < StandardError ; end
+    CreatorError = Class.new(StandardError)
+    ValueChangedCallbackError = Class.new(StandardError)
 
     def self.included base
       base.class_eval do
@@ -36,28 +37,40 @@ module DirtyHistory
 
         self.dirty_history_columns ||= []
 
-        if args.present?
+        before_save     :set_dirty_history_changes
+        after_save      :save_dirty_history
 
-          before_save     :set_dirty_history_changes
-          after_save      :save_dirty_history
+        options = args.extract_options!
 
-          args.each do |arg|
-            if [String,Symbol].include?(arg.class)
-              arg = arg.to_sym
-              self.dirty_history_columns << arg unless self.dirty_history_columns.include?(arg)
-            elsif arg.is_a?(Hash)
-              creator_proc = arg.delete(:creator)
-              send :define_method, "creator_for_dirty_history" do
-                begin
-                  creator_proc.is_a?(Proc) ? creator_proc.call : nil
-                rescue
-                  raise DirtyHistory::Mixin::CreatorProcError
-                end
-              end
+        args.each do |arg|
+          arg = arg.to_sym
+          self.dirty_history_columns << arg unless self.dirty_history_columns.include?(arg)
+        end
+
+        if creator = options.delete(:creator)
+          send :define_method, "creator_for_dirty_history" do
+            begin
+              creator.is_a?(Proc) ? creator.call : send(creator)
+            rescue
+              raise DirtyHistory::Mixin::CreatorError
             end
           end
-          include DirtyHistory::Mixin::AssetInstanceMethods
         end
+
+        if value_changed_callback = options.delete(:value_changed_callback)
+          send :define_method, "dirty_history_record_value_changed_callback" do |dhr|
+            # the `value_changed_callback` is a proc or method name which
+            # receives the DirtyHistoryRecord instance as an argument
+            begin
+              value_changed_callback.is_a?(Proc) ? value_changed_callback.call(dhr) : send(value_changed_callback, dhr)
+            rescue
+              raise DirtyHistory::Mixin::ValueChangedCallbackError
+            end
+          end
+        end
+
+        include DirtyHistory::Mixin::AssetInstanceMethods
+
       end # has_dirty_history
 
       def creates_dirty_history
