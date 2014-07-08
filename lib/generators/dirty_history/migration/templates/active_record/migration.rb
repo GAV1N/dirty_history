@@ -21,6 +21,8 @@ class CreateDirtyHistoryRecords < ActiveRecord::Migration
     add_index :dirty_history_records, [:deleted_at, :created_at,  :value_changed_at], :name => "index_deleted_at_created_at"
     add_index :dirty_history_records, [:asset_type, :column_name, :deleted_at], :name => "index_obj_type_column_deleted_at"
     add_index :dirty_history_records, [:asset_type, :column_name, :deleted_at, :created_at, :value_changed_at], :name => "index_obj_type_column_deleted_at_created_at"
+    add_index :dirty_history_records, [:asset_type, :asset_id, :column_name]
+    add_index :dirty_history_records, [:asset_type, :asset_id, :column_name, :new_value]
 
     add_index :dirty_history_records, :old_value, :name => "index_old_value"
     add_index :dirty_history_records, :new_value, :name => "index_new_value"
