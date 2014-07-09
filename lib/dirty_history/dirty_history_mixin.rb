@@ -63,8 +63,8 @@ module DirtyHistory
             # receives the DirtyHistoryRecord instance as an argument
             begin
               value_changed_callback.is_a?(Proc) ? value_changed_callback.call(dhr) : send(value_changed_callback, dhr)
-            rescue
-              raise DirtyHistory::Mixin::ValueChangedCallbackError
+            rescue => ex
+              raise DirtyHistory::Mixin::ValueChangedCallbackError, ex.message
             end
           end
         end
